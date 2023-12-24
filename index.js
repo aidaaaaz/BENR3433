@@ -37,8 +37,59 @@ run().catch(console.dir);
 
 const db = client.db("ApartmentVisitorManagement");
 const Visitorregistration = db.collection('Visitor');
-const adminuser = db.collection('Admin'); // This is the line causing the error
+const adminuser = db.collection('Admin');
 const collectionsecurity = db.collection('Security');
+const visitorPasses = db.collection('VisitorPass'); // Use the correct collection name
+
+// Admin issue visitor pass
+app.post('/issuevisitorpass', verifyToken, async (req, res) => {
+    const { visitorId, validUntil } = req.body;
+
+    try {
+        const db = client.db("ApartmentVisitorManagement");
+        const visitorPasses = db.collection('VisitorPass'); // Use the correct collection name
+
+        // Get user information from the token
+        const { username } = req.user;
+        
+        console.log('Issued By:', username);
+
+        const newPass = {
+            visitorId,
+            issuedBy: username, // Set issuedBy based on the user from the token
+            validUntil,
+        };
+
+        await visitorPasses.insertOne(newPass);
+        res.status(201).json({ message: 'Visitor pass issued successfully' });
+    } catch (error) {
+        console.error('Issue Pass Error:', error.message);
+        res.status(500).json({ error: 'An error occurred while issuing the pass', details: error.message });
+    }
+});
+
+// Visitor Retrieve Their Pass
+app.get('/retrievepass/:visitorId', async (req, res) => {
+    const visitorId = req.params.visitorId;
+  
+    try {
+      const db = client.db("ApartmentVisitorManagement");
+      const visitorPasses = db.collection('VisitorPass'); // Use the correct collection name
+  
+      const pass = await visitorPasses.findOne({ visitorId }, { projection: { issuedAt: 0 } });
+      // The projection: { issuedAt: 0 } excludes the issuedAt field from the response
+  
+      if (!pass) {
+        return res.status(404).json({ error: 'No pass found for this visitor' });
+      }
+  
+      res.json(pass);
+    } catch (error) {
+      console.error('Retrieve Pass Error:', error.message);
+      res.status(500).json({ error: 'An error occurred while retrieving the pass', details: error.message });
+    }
+});
+
 
 
 //function generate token1 for admin
@@ -79,6 +130,8 @@ function verifyToken1(req, res, next) {
 app.post('/registeradmin', (req, res) => {
     const admins = req.body;
 
+    console.log('Received request to register admins:', admins);
+
     adminuser.insertMany(admins, (err, result) => {
         if (err) {
             console.error('Error inserting admins:', err);
@@ -89,6 +142,7 @@ app.post('/registeradmin', (req, res) => {
         res.send('Admins registered successfully!');
     });
 });
+
 
 
   //to login admin..
@@ -173,10 +227,27 @@ app.post('/registervisitor', verifyToken1, (req, res) => {
     res.send('Visitor registered successfully!');
   });
   
-
-  //to view visitor into database (both admin and security)
-app.get('/viewvisitor', (req, res) => 
-  {
+// Middleware to verify token
+function verifyToken(req, res, next) {
+    let header = req.headers.authorization;
+  
+    if (!header) {
+      return res.status(401).send("Authorization header missing");
+    }
+  
+    let token = header.split(' ')[1];
+  
+    jwt.verify(token, 'admin', function (err, decoded) {
+      if (err) {
+        return res.status(403).send("Invalid Token");
+      }
+  
+      req.user = decoded;
+      next();
+    });
+  }
+// Updated /viewvisitor endpoint
+app.get('/viewvisitor', verifyToken, (req, res) => {
     Visitorregistration.find().toArray()
       .then(Visitor => {
         res.json(Visitor);
@@ -185,7 +256,7 @@ app.get('/viewvisitor', (req, res) =>
         console.error('Error retrieving visitor information:', error);
         res.status(500).send('An error occurred while retrieving visitor information');
       });
-    });
+  });
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

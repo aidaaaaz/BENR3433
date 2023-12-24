@@ -1,5 +1,6 @@
 
 GET http://localhost:2000/viewvisitor
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg4NjUzOWViMzNlMzU0NjE1MjkzNzEiLCJ1c2VybmFtZSI6ImZ6IiwicGFzc3dvcmQiOjEyMzQ1NiwiaWF0IjoxNzAzNDM5NjAzLCJleHAiOjE3MDM0NDMyMDN9.pNIP8wWiP1RgLRJlZJTscY5BDuBKc3e1wiwFkNvQDHo
 
 ####
 POST http://localhost:2000/registeradmin
@@ -7,16 +8,35 @@ Content-Type: application/json
 
 [
     {
-        "username": "farah",
+        "username": "fz",
         "password": 123456
     }, 
 
     { 
-        "username" : "awin",
+        "username" : "az",
         "password" : 1234567
     }
     
 ]
+
+###
+//Admin issue visitor pass
+
+POST http://localhost:2000/issuevisitorpass
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg4NjUzOWViMzNlMzU0NjE1MjkzNzEiLCJ1c2VybmFtZSI6ImZ6IiwicGFzc3dvcmQiOjEyMzQ1NiwiaWF0IjoxNzAzNDQyNDE4LCJleHAiOjE3MDM0NDYwMTh9.X0PJ2PbWSxMboI8vVlD8VxPcGeOvudhY88TncVKOKtU
+
+{
+    "visitorId": "65887247d95fd4326c636288",
+    "issuedBy": "fzi",
+    "validUntil": "2023-10 23:59:59"
+}
+
+
+###
+//Visitor to Retrieve Their Pass          //visitor ID
+GET http://localhost:2000/retrievepass/65887247d95fd4326c636288
+
 
 
 ####
@@ -24,7 +44,7 @@ POST http://localhost:2000/login
 Content-Type: application/json
 
 { 
-    "username": "wani",
+    "username": "az",
     "password": 1234567
 
 }
@@ -32,12 +52,12 @@ Content-Type: application/json
 ####
 POST http://localhost:2000/registervisitor
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg4NDQyOTVmMmQ4MTI1YmZjMDU5ZWEiLCJ1c2VybmFtZSI6IndhbmkiLCJwYXNzd29yZCI6MTIzNDU2NywiaWF0IjoxNzAzNDI5NjU0LCJleHAiOjE3MDM0MzMyNTR9.BW-dKQAXhsc0Fy3IBQsp9mIgRSoH6dSKPctyQH-xVYM
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg4NjUzOWViMzNlMzU0NjE1MjkzNzIiLCJ1c2VybmFtZSI6ImF6IiwicGFzc3dvcmQiOjEyMzQ1NjcsImlhdCI6MTcwMzQ0NDAwMSwiZXhwIjoxNzAzNDQ3NjAxfQ.MNIgxG75cRAiimypLBiw7G8RWajtpOG4bqrkLJm11HA
 {
-    "Name": "farah",
-    "Phone_Number" : "01234567890",
-    "Address": "durian tunggal",
-    "Floor_Wing": "17",
-    "Whom_to_meet": "syira",
-    "Reason_to_meet": "makan"
+    "Name": "anis",
+    "Phone_Number": "01234567890",
+    "Address": "jalan permai",
+    "Floor_Wing": "23k",
+    "Whom_to_meet": "zana",
+    "Reason_to_meet": "party"
 }

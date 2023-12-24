@@ -1,0 +1,40 @@
+
+GET http://localhost:2000/viewvisitor
+
+##POST http://localhost:2000/registeradmin
+Content-Type: application/json
+
+{
+    "username": "aida",
+    "password": 123456
+}
+
+POST http://localhost:2000/registeradmin
+Content-Type: application/json
+
+{
+    "username": "fifee",
+    "password": 789011
+}
+
+####
+POST http://localhost:2000/login
+Content-Type: application/json
+
+{
+    "username": "aida",
+    "password": 123456
+}
+
+####
+POST http://localhost:2000/registervisitor
+Content-Type: application/json
+
+{
+    "Name": "Syana",
+    "Phone_Number" : "01234567890",
+    "Address": "jalan permai",
+    "Floor_Wing": "23k",
+    "Whom_to_meet": "zana",
+    "Reason_to_meet": "party"
+}

@@ -1,40 +1,43 @@
 
 GET http://localhost:2000/viewvisitor
 
-##POST http://localhost:2000/registeradmin
-Content-Type: application/json
-
-{
-    "username": "aida",
-    "password": 123456
-}
-
+####
 POST http://localhost:2000/registeradmin
 Content-Type: application/json
 
-{
-    "username": "fifee",
-    "password": 789011
-}
+[
+    {
+        "username": "farah",
+        "password": 123456
+    }, 
+
+    { 
+        "username" : "awin",
+        "password" : 1234567
+    }
+    
+]
+
 
 ####
 POST http://localhost:2000/login
 Content-Type: application/json
 
-{
-    "username": "aida",
-    "password": 123456
+{ 
+    "username": "wani",
+    "password": 1234567
+
 }
 
 ####
 POST http://localhost:2000/registervisitor
 Content-Type: application/json
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTg4NDQyOTVmMmQ4MTI1YmZjMDU5ZWEiLCJ1c2VybmFtZSI6IndhbmkiLCJwYXNzd29yZCI6MTIzNDU2NywiaWF0IjoxNzAzNDI5NjU0LCJleHAiOjE3MDM0MzMyNTR9.BW-dKQAXhsc0Fy3IBQsp9mIgRSoH6dSKPctyQH-xVYM
 {
-    "Name": "Syana",
+    "Name": "farah",
     "Phone_Number" : "01234567890",
-    "Address": "jalan permai",
-    "Floor_Wing": "23k",
-    "Whom_to_meet": "zana",
-    "Reason_to_meet": "party"
+    "Address": "durian tunggal",
+    "Floor_Wing": "17",
+    "Whom_to_meet": "syira",
+    "Reason_to_meet": "makan"
 }

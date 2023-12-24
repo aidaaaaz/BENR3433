@@ -37,7 +37,7 @@ run().catch(console.dir);
 
 const db = client.db("ApartmentVisitorManagement");
 const Visitorregistration = db.collection('Visitor');
-const Admin = db.collection('Admin'); // This is the line causing the error
+const adminuser = db.collection('Admin'); // This is the line causing the error
 const collectionsecurity = db.collection('Security');
 
 
@@ -75,31 +75,27 @@ function verifyToken1(req, res, next) {
  }
 
 
-//post to register admin,
-//post to register admin,
+// post to register admin
 app.post('/registeradmin', (req, res) => {
-    let adminData = {
-      username: req.body.username,
-      password: req.body.password
-    }; 
-  
-    Admin.insertOne(adminData, (err, result) => {
-      if (err) {
-        console.error('Error inserting data:', err);
-        res.status(500).send('Internal Server Error');
-        return;
-      }
-      console.log('Admin registered:', result.insertedId);
-      res.send('Admin registered successfully!');
+    const admins = req.body;
+
+    adminuser.insertMany(admins, (err, result) => {
+        if (err) {
+            console.error('Error inserting admins:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        console.log('Admins registered:', result.insertedIds);
+        res.send('Admins registered successfully!');
     });
-  });
-  
+});
+
 
   //to login admin..
  // Route to login admin
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const adminUser = await Admin.findOne({ username, password }); // Rename variable
+    const adminUser = await adminuser.findOne({ username, password }); // Rename variable
     if (adminUser) {
       console.log("Login Successful! Admin User:", adminUser);
       let token1 = generateToken1(adminUser);
@@ -230,7 +226,7 @@ adminuser
 // Example data in the Admin collection
 [
     {
-      username: "syazwinapauzi",
+      username: "aidazainuddin",
       password: "123456"
     }
   ]

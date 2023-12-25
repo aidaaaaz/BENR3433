@@ -1,14 +1,39 @@
-const express = require('express')
-const app = express()
-const port = 2000
+const express = require('express');
+const app = express();
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
-app.use(express.json())
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const bodyParser = require('body-parser');
 
-///connect to Mondodb
-const { MongoClient, ServerApiVersion, Admin } = require('mongodb');
+
+// Middleware to parse JSON request bodies
+app.use(bodyParser.json());
+app.use(express.json());
+
+// ... (other imports and configurations)
+
+// Swagger definition
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: 'Apartment Visitor Management API',
+      description: 'API documentation for Apartment Visitor Management',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./index.js'], // Update this to match your actual file name
+};
+
+// Initialize swagger-jsdoc
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Connect to MongoDB
 const uri = "mongodb+srv://aida:test123@cluster0.bx9feas.mongodb.net/";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -18,28 +43,109 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-    try {
-      // Connect the client to the server (optional starting in v4.7)
-      await client.connect();
-      // Send a ping to confirm a successful connection
-      await client.db("ApartmentVisitorManagement").command({ ping: 1 });
-      console.log("MongoDB is connected");
-    } finally {
-      // Ensures that the client will close when you finish/error
-      // You should handle the closing of the client here
-      // await client.close();
-    }
+  try {
+    await client.connect();
+    await client.db("ApartmentVisitorManagement").command({ ping: 1 });
+    console.log("MongoDB is connected");
+  } catch (error) {
+    console.error('MongoDB Connection Error:', error);
   }
-  
-  run().catch(console.dir);
-  
+}
+
 run().catch(console.dir);
+
+// async function run() {
+//     try {
+//       // Connect the client to the server (optional starting in v4.7)
+//       await client.connect();
+//       // Send a ping to confirm a successful connection
+//       await client.db("ApartmentVisitorManagement").command({ ping: 1 });
+//       console.log("MongoDB is connected");
+//     } finally {
+//       // Ensures that the client will close when you finish/error
+//       // You should handle the closing of the client here
+//       // await client.close();
+//     }
+//   }
+  
+//   run().catch(console.dir);
+  
+// run().catch(console.dir);
 
 const db = client.db("ApartmentVisitorManagement");
 const Visitorregistration = db.collection('Visitor');
 const adminuser = db.collection('Admin');
 const collectionsecurity = db.collection('Security');
 const visitorPasses = db.collection('VisitorPass'); // Use the correct collection name
+
+// swagger to register admin
+
+
+/**
+ * @swagger
+ * /registeradmin:
+ *   post:
+ *     summary: Register admin
+ *     description: Endpoint to register admin users
+ *     consumes:
+ *       - application/json
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: admins
+ *         description: Array of admin objects
+ *         required: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Admins registered successfully
+ *       500:
+ *         description: An error occurred while registering admins
+ */
+app.post('/registeradmin', (req, res) => {
+    const admins = req.body;
+
+    console.log('Received request to register admins:', admins);
+
+    adminuser.insertMany(admins, (err, result) => {
+        if (err) {
+            console.error('Error inserting admins:', err);
+            res.status(500).json({ error: 'Internal Server Error', details: err.message });
+            return;
+        }
+        console.log('Admins registered:', result.insertedIds);
+        res.status(201).json({ message: 'Admins registered successfully!' });
+    });
+});
+
+
+
+// // post to register admin
+// app.post('/registeradmin', (req, res) => {
+//     const admins = req.body;
+
+//     console.log('Received request to register admins:', admins);
+
+//     adminuser.insertMany(admins, (err, result) => {
+//         if (err) {
+//             console.error('Error inserting admins:', err);
+//             res.status(500).send('Internal Server Error');
+//             return;
+//         }
+//         console.log('Admins registered:', result.insertedIds);
+//         res.send('Admins registered successfully!');
+//     });
+// });
+
 
 // Admin issue visitor pass
 app.post('/issuevisitorpass', verifyToken, async (req, res) => {
@@ -125,24 +231,7 @@ function verifyToken1(req, res, next) {
    });
  }
 
-
-// post to register admin
-app.post('/registeradmin', (req, res) => {
-    const admins = req.body;
-
-    console.log('Received request to register admins:', admins);
-
-    adminuser.insertMany(admins, (err, result) => {
-        if (err) {
-            console.error('Error inserting admins:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        console.log('Admins registered:', result.insertedIds);
-        res.send('Admins registered successfully!');
-    });
-});
-
+ 
 
 
   //to login admin..
@@ -257,10 +346,13 @@ app.get('/viewvisitor', verifyToken, (req, res) => {
         res.status(500).send('An error occurred while retrieving visitor information');
       });
   });
-
+  const port = 2000; // Declare the port here
   app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`);
   });
+//    app.listen(port, () => {
+//     console.log(`Example app listening on port ${port}`)
+//   });
 
   app.put('/users/:id', verifyToken1, (req, res) => {
    const userId = req.params.id;

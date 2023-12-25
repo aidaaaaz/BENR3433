@@ -1,0 +1,62 @@
+const express = require('express');
+const app = express();
+const jwt = require('jsonwebtoken');
+const { ObjectId } = require('mongodb');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+app.use(express.json());
+
+// Other imports and configurations...
+
+// Swagger definition
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: 'Apartment Visitor Management API',
+      description: 'API documentation for Apartment Visitor Management',
+      version: '1.0.0',
+    },
+  },
+  // Specify the paths to files containing Swagger comments
+  apis: ['./app.js'], // Update this to match your actual file name
+};
+
+// Initialize swagger-jsdoc
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+/**
+ * @swagger
+ * /issuevisitorpass:
+ *   post:
+ *     summary: Issue visitor pass
+ *     description: Endpoint to issue a visitor pass
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               visitorId:
+ *                 type: string
+ *               validUntil:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       201:
+ *         description: Visitor pass issued successfully
+ *       500:
+ *         description: An error occurred while issuing the pass
+ */
+app.post('/issuevisitorpass', verifyToken, async (req, res) => {
+  // Your existing code for issuing a visitor pass
+});
+
+// Other route handlers with Swagger comments...
+
+const PORT = process.env.PORT || 2000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
